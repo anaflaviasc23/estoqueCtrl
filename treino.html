@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Treinos - Desafio dos 75 Dias</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f9f9f9;
+        }
+
+        h1 {
+            text-align: center;
+            color: #0084ac;
+        }
+
+        .treino {
+            margin: 30px 0;
+            padding: 15px;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .treino h3 {
+            margin-bottom: 10px;
+            color: #0084ac;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 20px;
+        }
+
+        ul li {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        ul li input[type="checkbox"] {
+            margin-right: 8px;
+            cursor: pointer;
+            transform: scale(1.1);
+        }
+
+        ul li label {
+            cursor: pointer;
+        }
+
+        /* Link voltar */
+        .voltar {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .voltar a {
+            text-decoration: none;
+            color: #0084ac;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Treinos do Desafio</h1>
+
+    <div id="treinosContainer"></div>
+
+    <div class="voltar">
+        <a href="index.html">← Voltar para as Regras</a>
+    </div>
+
+    <script>
+        const treinos = [
+            {
+                nome: "Treino A - (Quadriceps/perna frente)",
+                exercicios: [
+                    "Agachamento Squat. Frontal (3X15)",
+                    "Leg 45º (3X12)",
+                    "Cadeira Extensora 3x 12",
+                    "Agachamento livre 3x12",
+                    "Adução 3x20",
+                    "Panturrilha sentado 4x12"
+                ]
+            },
+            {
+                nome: "Treino B - (Costas/Biceps)",
+                exercicios: [
+                    "Puxada Alta unilateral (3x15)",
+                    "Remada baixa pegada neutra (3x15)",
+                    "Remada Articulada (3x12)",
+                    "Puxada Triângulo (3x12)",
+                    "Rosca direta + Martelo (3x10)",
+                    "Rosca Superman (3x10)",
+                    "Elevação lateral (3x10)"
+                ]
+            },
+            {
+                nome: "Treino C - (Posterior/gluteos)",
+                exercicios: [
+                    "Agachamento Sumo (3x15)",
+                    "Mesa Flexora(deitado) - (3x12)",
+                    "Leg Deitado (3x15)",
+                    "Cadeira Flexora (3x15)",
+                    "Elevação Pélvica (3x12)",
+                    "Abdução (3x20)",
+                ]
+            },
+            {
+                nome: "Treino D - (Peitoral / Ombro / Triceps)",
+                exercicios: [
+                    "Supino reto art. (3x12)",
+                    "Supino inclinado (3x12)",
+                    "Triceps Francês Maquina (3x10)",
+                    "Tríceps pulley (3x12)",
+                    "Elevação frontal (3x10)",
+                    "Desenvolvimento LIVRE (3x10)",
+                    "Voador (3x10)",
+                    "Triceps Máquina Paralela (3x15)"
+                ] 
+            }
+        ];
+
+        const container = document.getElementById('treinosContainer');
+
+        treinos.forEach((treinoObj, tIndex) => {
+            const treinoDiv = document.createElement('div');
+            treinoDiv.classList.add('treino');
+
+            const titulo = document.createElement('h3');
+            titulo.textContent = treinoObj.nome;
+            treinoDiv.appendChild(titulo);
+
+            const ul = document.createElement('ul');
+            treinoObj.exercicios.forEach((exercicio, i) => {
+                const li = document.createElement('li');
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.id = `treino_${tIndex}_exercicio_${i}`;
+
+                // Recuperar estado salvo
+                checkbox.checked = localStorage.getItem(checkbox.id) === 'true';
+
+                checkbox.addEventListener('change', () => {
+                    localStorage.setItem(checkbox.id, checkbox.checked);
+                });
+
+                const label = document.createElement('label');
+                label.htmlFor = checkbox.id;
+                label.textContent = exercicio;
+
+                li.appendChild(checkbox);
+                li.appendChild(label);
+                ul.appendChild(li);
+            });
+            treinoDiv.appendChild(ul);
+
+            container.appendChild(treinoDiv);
+        });
+    </script>
+
+</body>
+
+</html>

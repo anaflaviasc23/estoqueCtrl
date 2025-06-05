@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Desafio dos 75 Dias</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+    }
+    .habit {
+      margin: 30px 0;
+      padding: 15px;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .habit h3 {
+      margin-bottom: 10px;
+    }
+    .semana {
+      display: flex;
+      align-items: center;
+      margin: 5px 0;
+    }
+    .semana-label {
+      min-width: 80px;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      text-align: center;
+      margin-right: 10px;
+    }
+    .dias {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+    .dia {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      background: #fff;
+      border: 2px solid;
+      user-select: none;
+    }
+    .completed {
+      color: white;
+    }
+    .progress-bar-container {
+      background: #eee;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+    .progress-bar {
+      height: 10px;
+      width: 0;
+      border-radius: 5px;
+      transition: width 0.3s;
+    }
+    /* Modal */
+    #motivacionalModal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      align-items: center;
+      justify-content: center;
+    }
+    #motivacionalModal .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 300px;
+    }
+    #motivacionalModal button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      background: #0896a8;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    img {
+      display: flex;
+      height: auto;
+      width: 100%;
+    }
+    hr {
+      color: #0084ac;
+    }
+  </style>
+</head>
+<body>
+
+<img src="assests/logo.png" alt="logo">
+<br>
+<hr>
+
+<div class="legend">
+  <h1>Regras:</h1>
+  <span>🍎 Se alimentar bem</span><br>
+  <span>🏋️‍♂️ Fazer exercício</span><br>
+  <span>🚶‍♂️ Corrida</span><br>
+  <span>🚫 Cortar álcool e besteiras</span><br>
+  <span>💧 1.5L de água</span><br>
+  <span>📖 24 Exercícios </span><br>
+  <span>📖 Estudos e Revisão </span><br>
+
+</div>
+
+<!-- Botão para a página do treino -->
+<div style="text-align: center; margin: 20px 0;">
+  <button onclick="window.location.href='treino.html'" style="padding: 10px 20px; font-size: 16px; background-color: #0084ac; color: white; border: none; border-radius: 8px; cursor: pointer;">
+    Ver Treino
+  </button>
+</div>
+
+<hr>
+
+<div id="cronograma"></div>
+
+<!-- Modal Motivacional -->
+<div id="motivacionalModal">
+  <div class="modal-content">
+    <p id="motivacionalTexto"></p>
+    <button onclick="fecharModal()">OK</button>
+  </div>
+</div>
+
+<script>
+  const habitos = [
+    { nome: "Estudos e Revisão", cor: "#0084ac" },
+    { nome: "Exercícios Teóricos", cor: "#ff6f61" },
+    { nome: "Alimentação", cor: "#ffa500" },
+    { nome: "Exercício", cor: "#32cd32" },
+    { nome: "Corrida", cor: "#8a2be2" },
+    { nome: "Sem besteiras", cor: "#dc143c" },
+    { nome: "Água", cor: "#20b2aa" }
+  ];
+
+  const totalDias = 75;
+  const diasPorSemana = 7;
+  const totalSemanas = Math.ceil(totalDias / diasPorSemana);
+
+  const mensagensPorSemana = [
+    "Parabéns, completou a 1ª semana! 🎉",
+    "Parabéns, completou a 2ª semana! 🚀",
+    "Parabéns, completou a 3ª semana! 💪",
+    "Parabéns, completou a 4ª semana! 🌟",
+    "Parabéns, completou a 5ª semana! 🔥",
+    "Parabéns, completou a 6ª semana! 🎯",
+    "Parabéns, completou a 7ª semana! 🌈",
+    "Parabéns, completou a 8ª semana! 🏅",
+    "Parabéns, completou a 9ª semana! 🥇",
+    "Parabéns, completou a 10ª semana! 🏆",
+    "Parabéns, completou a 11ª semana! 🎊"
+  ];
+
+  const cronograma = document.getElementById('cronograma');
+
+  habitos.forEach((habitoObj, hIndex) => {
+    const habitoDiv = document.createElement('div');
+    habitoDiv.classList.add('habit');
+
+    const titulo = document.createElement('h3');
+    titulo.textContent = habitoObj.nome;
+    habitoDiv.appendChild(titulo);
+
+    let totalConcluidos = 0;
+
+    for (let s = 0; s < totalSemanas; s++) {
+      const semanaDiv = document.createElement('div');
+      semanaDiv.classList.add('semana');
+
+      const label = document.createElement('div');
+      label.classList.add('semana-label');
+      label.style.backgroundColor = habitoObj.cor;
+      label.textContent = `SEMANA ${s + 1}`;
+      semanaDiv.appendChild(label);
+
+      const diasDiv = document.createElement('div');
+      diasDiv.classList.add('dias');
+
+      const diasNaSemana = (s === totalSemanas - 1) ? totalDias % diasPorSemana : diasPorSemana;
+
+      for (let d = 1; d <= diasNaSemana; d++) {
+        const diaNum = s * diasPorSemana + d;
+        const diaDiv = document.createElement('div');
+        diaDiv.classList.add('dia');
+        diaDiv.style.borderColor = habitoObj.cor;
+        diaDiv.textContent = d;
+
+        const key = `habit_${hIndex}_day_${diaNum}`;
+
+        if (localStorage.getItem(key) === 'true') {
+          diaDiv.classList.add('completed');
+          diaDiv.style.backgroundColor = habitoObj.cor;
+          totalConcluidos++;
+        }
+
+        diaDiv.addEventListener('click', () => {
+          diaDiv.classList.toggle('completed');
+          const isCompleted = diaDiv.classList.contains('completed');
+          localStorage.setItem(key, isCompleted);
+
+          diaDiv.style.backgroundColor = isCompleted ? habitoObj.cor : '#fff';
+          diaDiv.style.color = isCompleted ? '#fff' : '#000';
+
+          if (isCompleted) totalConcluidos++;
+          else totalConcluidos--;
+
+          atualizarProgresso();
+          verificarSemana(hIndex, s, diasNaSemana);
+        });
+
+        diasDiv.appendChild(diaDiv);
+      }
+
+      semanaDiv.appendChild(diasDiv);
+      habitoDiv.appendChild(semanaDiv);
+    }
+
+    const progressContainer = document.createElement('div');
+    progressContainer.classList.add('progress-bar-container');
+
+    const progressBar = document.createElement('div');
+    progressBar.classList.add('progress-bar');
+    progressBar.style.backgroundColor = habitoObj.cor;
+    progressContainer.appendChild(progressBar);
+
+    habitoDiv.appendChild(progressContainer);
+    cronograma.appendChild(habitoDiv);
+
+    function atualizarProgresso() {
+      const percent = (totalConcluidos / totalDias) * 100;
+      progressBar.style.width = `${percent}%`;
+    }
+    atualizarProgresso();
+  });
+
+  function verificarSemana(hIndex, sIndex, diasNaSemana) {
+    let completados = 0;
+    for (let d = 1; d <= diasNaSemana; d++) {
+      const diaNum = sIndex * diasPorSemana + d;
+      const key = `habit_${hIndex}_day_${diaNum}`;
+      if (localStorage.getItem(key) === 'true') {
+        completados++;
+      }
+    }
+    if (completados === diasNaSemana) {
+      mostrarModal(mensagensPorSemana[sIndex] || "Parabéns! Mais uma semana concluída! 🎊");
+    }
+  }
+
+  function mostrarModal(mensagem) {
+    document.getElementById('motivacionalTexto').textContent = mensagem;
+    document.getElementById('motivacionalModal').style.display = 'flex';
+  }
+
+  function fecharModal() {
+    document.getElementById('motivacionalModal').style.display = 'none';
+  }
+</script>
+
+</body>
+</html>
